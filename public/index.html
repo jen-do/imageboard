@@ -2,9 +2,26 @@
 <html>
 <head>
     <title></title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+    <h1>Imageboard</h1>
+    <hr>
+
+    <div id="main">
+
+
+            <div v-for = 'image in images' class="imagebox">
+                <img :src="image.url" class="img">
+                <p>{{ image.title }}</p>
+            </div>
+        
+
+    </div>
+
+
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>
+    <script src="/js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+.img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.imagebox {
+    padding: 10px;
+    margin: 20px;
+    border: 1px solid #eaeaea;
+}
+
+#main {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
