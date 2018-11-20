@@ -1,3 +1,28 @@
+h1,
+h2 {
+    font-family: "Source Code Pro", monospace;
+    font-weight: 500;
+    text-align: center;
+}
+
+h4 {
+    font-family: "Source Code Pro", monospace;
+}
+
+p,
+input,
+input[type="file" i],
+button {
+    font-family: "Source Code Pro", monospace;
+    font-size: 0.8em;
+}
+
+button {
+    font-weight: 500;
+    background: #fff;
+    border: 1px solid #333;
+}
+
 .img {
     width: 300px;
     height: 200px;
@@ -8,6 +33,20 @@
     padding: 10px;
     margin: 20px;
     border: 1px solid #eaeaea;
+    width: 300px;
+    box-shadow: 12px 13px 25px -6px rgba(0, 0, 0, 0.55);
+    -webkit-box-shadow: 12px 13px 25px -6px rgba(0, 0, 0, 0.55);
+    -moz-box-shadow: 12px 13px 25px -6px rgba(0, 0, 0, 0.55);
+}
+
+.imgcontainer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+form {
+    margin: 20px 0;
 }
 
 #main {

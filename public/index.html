@@ -3,6 +3,7 @@
 <head>
     <title></title>
     <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700" rel="stylesheet">
 </head>
 <body>
     <h1>Imageboard</h1>
@@ -10,12 +11,25 @@
 
     <div id="main">
 
+        <form>
+            <input v-model="form.title" type="text" placeholder="title" name="title">
+            <input  v-model="form.description" type="text" placeholder="description" name="description">
+            <input  v-model="form.username" type="text" placeholder="username" name="username">
+            <input type="file" accept="image/*" @change = "handleFileChange">
+            <button @click = "uploadFile">upload</button>
+        </form>
 
-            <div v-for = 'image in images' class="imagebox">
-                <img :src="image.url" class="img">
-                <p>{{ image.title }}</p>
-            </div>
-        
+        <div class="imgcontainer">
+        <div v-for = 'image in images' class="imagebox">
+            <img :src="image.url" class="img">
+            <h4>{{ image.title }}</h4>
+            <p><strong>description: </strong>{{ image.description }}</p>
+            <p><strong>uploaded by: </strong>{{ image.username }}</p>
+        </div>
+    </div>
+
+
+
 
     </div>
 
