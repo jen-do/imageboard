@@ -1,10 +1,81 @@
-// put all vue stuff in the effi to keep vue out of global scope
-
 (function() {
+    ///////////////////////////// VUE Component ////////////////////////////
+
+    Vue.component("popup", {
+        template: "#popup-template",
+        props: ["imageId"],
+        data: function() {
+            return {
+                singleImage: {},
+                form: {
+                    comment: "",
+                    username: ""
+                },
+                comments: []
+            };
+        },
+        watch: {
+            imageId: function() {
+                console.log("watcher running!", this.imageId);
+            }
+        },
+        mounted: function() {
+            var self = this;
+
+            axios
+                .get(`/singleImage/${this.imageId}`)
+                .then(function(resp) {
+                    self.singleImage = resp.data.selectedImage[0][0];
+                    self.comments = resp.data.selectedImage[1];
+                    // console.log(self.singleImage, self.comments);
+                })
+                .catch(function(err) {
+                    console.log(
+                        "error in axios GET request of singleImage: ",
+                        err
+                    );
+                });
+        },
+        methods: {
+            closeComponent: function() {
+                this.$emit("close-the-component"); // name of the message => refering to the eventhandler in index.html component-tag <popup>
+            },
+            submitComment: function(e) {
+                e.preventDefault();
+
+                var submittedComments = {
+                    comment: this.form.comment,
+                    username: this.form.username
+                };
+                var self = this;
+
+                axios
+                    .post(`/singleImage/${this.imageId}`, submittedComments)
+                    .then(function(resp) {
+                        self.comments.unshift(resp.data.newComment);
+                        console.log(
+                            "axios resp.data from the server when submitting comments: ",
+                            resp.data,
+                            self.comments
+                        );
+                    })
+                    .catch(function(err) {
+                        console.log(
+                            "error in axios POST request of singleImage: ",
+                            err
+                        );
+                    });
+            }
+        }
+    });
+
+    /////////////////////////// #main Vue instance ///////////////////////////
+
     new Vue({
         el: "#main", // el short for 'element'
         data: {
             images: [],
+            imageId: location.hash.slice(1) || 0,
             form: {
                 title: "",
                 description: "",
@@ -13,28 +84,40 @@
             }
         },
         mounted: function() {
-            console.log("this: ", this.images);
             var self = this;
+            window.addEventListener("hashchange", function() {
+                // console.log("hash has changed", location.hash.slice(1));
+                self.imageId = location.hash.slice(1);
+            });
             axios.get("/imageboard").then(function(resp) {
-                var imagesFromServer = resp.data;
-                self.images = imagesFromServer;
-
+                self.images = resp.data;
                 console.log("self.images = imagesFromServer: ", self.images);
             });
         }, // end of mounted function
         methods: {
-            handleFileChange: function(e) {
-                console.log("handlefilechange running", e.target.files[0]); // log the file just uploaded
-
-                // put uploaded file in data
-                this.form.file = e.target.files[0];
-                console.log("this.form: ", this.form);
+            toggleComponent: function(e) {
+                console.log(
+                    "e.target.id in toggleComponent: ",
+                    e.target.id
+                    // e.currentTarget.getAttribute("id"),
+                );
+                this.imageId = e.target.id;
+                //  e.currentTarget.getAttribute("id");
             },
+
+            closingTheComponent: function() {
+                this.imageId = 0;
+            },
+
+            handleFileChange: function(e) {
+                this.form.file = e.target.files[0];
+            },
+
             uploadFile: function(e) {
                 e.preventDefault(); // prevents form from submittung and reloading the page
                 console.log("this :", this.form);
 
-                //user formData to upload file an user input to server
+                //use formData to upload file an user input to server, use only for file uploads
                 var formData = new FormData();
 
                 formData.append("file", this.form.file);
@@ -47,6 +130,15 @@
                         self.images.unshift(resp.data.newImage);
                     }
                     console.log("resp: ", resp);
+                });
+            },
+            getMoreImages: function() {
+                var lastId = this.images[this.images.length - 1].id;
+                var self = this;
+                // GET /get-more-images/
+                axios.get("/get-more-images/" + lastId).then(function(resp) {
+                    console.log("resp in get-more-images: ", resp);
+                    self.images.push.apply(self.images, resp.data); // merging the two arrays self.images and resp.data into the images array in the vue instance data
                 });
             }
         }

@@ -6,6 +6,9 @@ var uidSafe = require("uid-safe");
 var path = require("path");
 const s3 = require("./s3.js");
 
+const bodyparser = require("body-parser");
+app.use(bodyparser.json());
+
 // boilerplate for file upload
 var diskStorage = multer.diskStorage({
     destination: function(req, file, callback) {
@@ -33,8 +36,8 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
     // If nothing went wrong the file is already in the uploads directory
     // property 'file' will be added to req object
     if (req.file) {
-        console.log("req.file.filename: ", req.file.filename);
-        console.log("req.body: ", req.body);
+        // console.log("req.file.filename: ", req.file.filename);
+        // console.log("req.body: ", req.body);
         db.saveUploads(
             "https://s3.amazonaws.com/spicedling/" + req.file.filename,
             req.body.username,
@@ -61,7 +64,6 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
 });
 
 app.get("/imageboard", (req, res) => {
-    console.log("hi");
     db.getImages()
         .then(results => {
             var imagesArr = results;
@@ -69,7 +71,56 @@ app.get("/imageboard", (req, res) => {
             res.json(imagesArr);
         })
         .catch(err => {
-            console.log("error in GET/: ", err);
+            console.log("error in GET/imageboard ", err);
+        });
+});
+
+app.get("/get-more-images/:id", (req, res) => {
+    var lastId = req.params.id;
+    db.getMoreImages(lastId)
+        .then(results => {
+            res.json(results);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+app.get("/singleImage/:imageId", (req, res) => {
+    Promise.all([
+        db.getSelectedImage(req.params.imageId),
+        db.getComments(req.params.imageId)
+    ])
+        .then((selectedImage, comments) => {
+            // console.log(
+            //     "selectedImage and comments: ",
+            //     selectedImage,
+            //     comments
+            // );
+            res.json({
+                selectedImage: selectedImage,
+                comments: comments
+            });
+        })
+        .catch(err => {
+            console.log("error in GET/singleimage image: ", err);
+        });
+});
+
+app.post("/singleImage/:imageId", (req, res) => {
+    console.log(
+        "req.body und req.params in post comment: ",
+        req.body,
+        req.params.imageId
+    );
+    db.saveComment(req.body.comment, req.body.username, req.params.imageId)
+        .then(results => {
+            res.json({
+                newComment: results[0]
+            });
+        })
+        .catch(err => {
+            console.log("error in POST saving comments: ", err);
         });
 });
 
