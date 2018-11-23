@@ -17,6 +17,19 @@
         watch: {
             imageId: function() {
                 console.log("watcher running!", this.imageId);
+                var self = this;
+                axios.get("/imageboard/" + self.imageId).then(function(resp) {
+                    if (resp.data.length > 0) {
+                        self.singleImage = resp.data[0];
+                        // console.log("valid id");
+                    } else {
+                        // console.log("no valid id");
+                        function closeTheComponent() {
+                            self.$emit("close-the-component");
+                        }
+                        closeTheComponent();
+                    }
+                });
             }
         },
         mounted: function() {
@@ -81,13 +94,14 @@
                 description: "",
                 username: "",
                 file: null
-            }
+            },
+            showMoreButton: true
         },
         mounted: function() {
             var self = this;
             window.addEventListener("hashchange", function() {
-                // console.log("hash has changed", location.hash.slice(1));
                 self.imageId = location.hash.slice(1);
+                // console.log(location.hash.slice(1));
             });
             axios.get("/imageboard").then(function(resp) {
                 self.images = resp.data;
@@ -137,8 +151,12 @@
                 var self = this;
                 // GET /get-more-images/
                 axios.get("/get-more-images/" + lastId).then(function(resp) {
-                    console.log("resp in get-more-images: ", resp);
                     self.images.push.apply(self.images, resp.data); // merging the two arrays self.images and resp.data into the images array in the vue instance data
+
+                    // hide more button if there are no more images to display:
+                    if (resp.data[0].last_id + 2 == lastId) {
+                        self.showMoreButton = false;
+                    }
                 });
             }
         }

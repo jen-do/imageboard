@@ -15,8 +15,9 @@
             <input v-model="form.title" type="text" placeholder="title" name="title">
             <input  v-model="form.description" type="text" placeholder="description" name="description">
             <input  v-model="form.username" type="text" placeholder="username" name="username">
-            <label class="custom-file-upload">
-            <input type="file" accept="image/*" @change = "handleFileChange">upload your image</label>
+            <!-- <label class="custom-file-upload"> -->
+            <input type="file" accept="image/*" @change = "handleFileChange">
+            <!-- upload your image</label> -->
             <button @click = "uploadFile" id="fileupload">upload</button>
         </form>
 
@@ -30,7 +31,7 @@
             </div>
         </div>
 
-        <button @click = "getMoreImages">more</button>
+        <button v-if = "showMoreButton" @click = "getMoreImages">more</button>
 
         <!-- name on the left is refering to name in props (must use kebab-case in vue attributes) - name on the right is refering to the name in the Vue instance -->
         <popup :image-id = "imageId" v-if="imageId > 0" @close-the-component = closingTheComponent>

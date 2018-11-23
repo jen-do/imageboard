@@ -36,8 +36,6 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
     // If nothing went wrong the file is already in the uploads directory
     // property 'file' will be added to req object
     if (req.file) {
-        // console.log("req.file.filename: ", req.file.filename);
-        // console.log("req.body: ", req.body);
         db.saveUploads(
             "https://s3.amazonaws.com/spicedling/" + req.file.filename,
             req.body.username,
@@ -45,12 +43,10 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
             req.body.description
         )
             .then(function(results) {
-                console.log("results:", results);
                 res.json({
                     newImage: results[0],
                     success: true
-                }),
-                console.log("data saved and sent to frontend");
+                });
             })
             .catch(err => {
                 console.log("error in POST /uploads if statement: ", err);
@@ -67,7 +63,7 @@ app.get("/imageboard", (req, res) => {
     db.getImages()
         .then(results => {
             var imagesArr = results;
-            console.log(imagesArr);
+            // console.log(imagesArr);
             res.json(imagesArr);
         })
         .catch(err => {
@@ -75,10 +71,24 @@ app.get("/imageboard", (req, res) => {
         });
 });
 
+app.get("/imageboard/:id", (req, res) => {
+    console.log("req.params.id", req.params.id);
+    db.checkId(req.params.id)
+        .then(results => {
+            console.log("results in checkId: ", results);
+            res.json(results);
+        })
+        .catch((err, results) => {
+            console.log("error in GET/checkId ", err);
+            res.json(results);
+        });
+});
+
 app.get("/get-more-images/:id", (req, res) => {
     var lastId = req.params.id;
     db.getMoreImages(lastId)
         .then(results => {
+            console.log(results);
             res.json(results);
         })
         .catch(err => {
@@ -92,11 +102,6 @@ app.get("/singleImage/:imageId", (req, res) => {
         db.getComments(req.params.imageId)
     ])
         .then((selectedImage, comments) => {
-            // console.log(
-            //     "selectedImage and comments: ",
-            //     selectedImage,
-            //     comments
-            // );
             res.json({
                 selectedImage: selectedImage,
                 comments: comments

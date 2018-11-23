@@ -7,7 +7,7 @@ exports.getImages = function() {
         .query(
             `SELECT * FROM images
             ORDER BY id DESC
-            LIMIT 9`
+            LIMIT 3`
         )
         .then(function(results) {
             return results.rows;
@@ -31,10 +31,15 @@ exports.saveUploads = function(file, username, title, description) {
 exports.getMoreImages = function(lastId) {
     return db
         .query(
-            `SELECT * FROM images
+            `
+        SELECT *, (
+            SELECT id FROM images
+            ORDER BY id
+            LIMIT 1) AS last_id
+        FROM images
         WHERE id < $1
         ORDER BY id DESC
-        LIMIT 9`,
+        LIMIT 3`,
             [lastId]
         )
         .then(function(results) {
@@ -78,6 +83,18 @@ exports.getComments = function(id) {
 //         })
 //     );
 // };
+
+exports.checkId = function(id) {
+    return db
+        .query(
+            `SELECT * FROM images
+            WHERE id = $1`,
+            [id]
+        )
+        .then(function(comments) {
+            return comments.rows;
+        });
+};
 
 exports.saveComment = function(comment, username, imageId) {
     return db

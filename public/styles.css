@@ -44,21 +44,20 @@ input {
     padding: 5px 10px;
 }
 
-input[type="file"] {
+/* input[type="file"] {
     display: none;
-}
+} */
 
 #fileupload {
     background: #404b69;
     color: #fff;
     font-weight: bold;
     border: none;
-
     padding: 0 20px;
     height: 40px;
 }
 
-.custom-file-upload {
+/* .custom-file-upload {
     background: #404b69;
     color: #fff;
     border: none;
@@ -66,7 +65,7 @@ input[type="file"] {
     padding: 4px 20px;
     cursor: pointer;
     margin-right: 10px;
-}
+} */
 
 .img {
     width: 300px;
