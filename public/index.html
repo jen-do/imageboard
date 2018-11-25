@@ -6,18 +6,17 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700" rel="stylesheet">
 </head>
 <body>
-    <h1>Imageboard</h1>
+    <h1>blue things</h1>
 
     <div id="main">
-
         <h2>image upload</h2>
         <form>
             <input v-model="form.title" type="text" placeholder="title" name="title">
             <input  v-model="form.description" type="text" placeholder="description" name="description">
             <input  v-model="form.username" type="text" placeholder="username" name="username">
-            <!-- <label class="custom-file-upload"> -->
+            <label class="custom-file-upload">
             <input type="file" accept="image/*" @change = "handleFileChange">
-            <!-- upload your image</label> -->
+            select your image</label>
             <button @click = "uploadFile" id="fileupload">upload</button>
         </form>
 
@@ -31,7 +30,8 @@
             </div>
         </div>
 
-        <button v-if = "showMoreButton" @click = "getMoreImages">more</button>
+        <button v-if = "showMoreButton" @click = "getMoreImages" id="more">more</button>
+
 
         <!-- name on the left is refering to name in props (must use kebab-case in vue attributes) - name on the right is refering to the name in the Vue instance -->
         <popup :image-id = "imageId" v-if="imageId > 0" @close-the-component = closingTheComponent>
@@ -43,7 +43,9 @@
     <!-- this script must be outside of #main -->
 
     <script id="popup-template" type="text/x-template">
+        <div class="outer-container">
         <div class="single-image-container">
+
 
             <h3 @click = "closeComponent" id="close">x</h3>
 
@@ -52,26 +54,27 @@
                 <img :src="singleImage.url" class="selected-img">
                 <p><strong>description: </strong>{{ singleImage.description }}</p>
                 <p><strong>uploaded by: </strong>{{ singleImage.username }}</p>
-                <p><strong>date: </strong>{{ singleImage.created_at }}</p>
+                <p><strong>date: </strong><span id ="date">{{ singleImage.created_at }}</span></p>
             </div>
 
             <form class="submit-comment">
                 <input v-model="form.comment" type="text" name="comment" placeholder="your comment">
-                <input  v-model="form.username" type="text" placeholder="username" name="username">
-                <button @click = "submitComment">submit</button>
+                <input  v-model="form.username" type="text" placeholder="your name" name="username">
+                <button @click = "submitComment" id="submit">submit</button>
             </form>
 
             <div class="comments">
-                <h2>Recent Comments</h2>
+                <h2 v-if ="comments.length > 0">Recent Comments</h2>
+                <h2 v-else>Be the first to add a comment.</h2>
                 <div v-for = "singleComment in comments" class="singleComment">
-                    <p>{{ singleComment.comment }}</p>
-                    <p>{{ singleComment.username }}</p>
+                    <p><strong>{{ singleComment.username }} said:</strong></p>
+                    <p>"{{ singleComment.comment }}"</p>
                     <p>{{ singleComment.created_at }}</p>
                 </div>
             </div>
 
         </div>
-
+    </div>
     </script>
 
 

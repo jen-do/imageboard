@@ -24,10 +24,10 @@
                         // console.log("valid id");
                     } else {
                         // console.log("no valid id");
-                        function closeTheComponent() {
+                        function closeComponent() {
                             self.$emit("close-the-component");
                         }
-                        closeTheComponent();
+                        closeComponent();
                     }
                 });
             }
@@ -66,11 +66,6 @@
                     .post(`/singleImage/${this.imageId}`, submittedComments)
                     .then(function(resp) {
                         self.comments.unshift(resp.data.newComment);
-                        console.log(
-                            "axios resp.data from the server when submitting comments: ",
-                            resp.data,
-                            self.comments
-                        );
                     })
                     .catch(function(err) {
                         console.log(

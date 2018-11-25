@@ -91,8 +91,8 @@ exports.checkId = function(id) {
             WHERE id = $1`,
             [id]
         )
-        .then(function(comments) {
-            return comments.rows;
+        .then(function(results) {
+            return results.rows;
         });
 };
 

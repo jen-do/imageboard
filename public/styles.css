@@ -9,8 +9,11 @@ body {
 }
 
 #main {
-    background: #add2c9;
+    background: #eee;
     padding: 3% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1,
@@ -41,31 +44,35 @@ p {
 
 input {
     margin: 10px;
-    padding: 5px 10px;
+    padding: 9px 10px;
+    font-family: "Source Code Pro", monospace;
 }
 
-/* input[type="file"] {
+label > input[type="file"] {
     display: none;
-} */
-
-#fileupload {
-    background: #404b69;
-    color: #fff;
-    font-weight: bold;
-    border: none;
-    padding: 0 20px;
-    height: 40px;
 }
 
-/* .custom-file-upload {
+button,
+.custom-file-upload {
     background: #404b69;
     color: #fff;
     border: none;
-    display: inline-block;
-    padding: 4px 20px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-family: "Source Code Pro", monospace;
     cursor: pointer;
-    margin-right: 10px;
-} */
+}
+
+.custom-file-upload {
+    display: inline-block;
+    font-size: 0.85em;
+}
+
+#more,
+#submit {
+    margin-top: 30px;
+    width: 190px;
+}
 
 .img {
     width: 300px;
@@ -88,7 +95,6 @@ input {
 form {
     display: flex;
     justify-content: center;
-
     flex-wrap: wrap;
 }
 
@@ -103,22 +109,39 @@ form {
     float: right;
 }
 
+.outer-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.6);
+}
+
 .single-image-container {
     position: fixed;
     overflow: scroll;
-    width: 90%;
+    width: 70%;
     height: auto;
     top: 5%;
-    left: 5%;
+    left: 15%;
     bottom: 5%;
     background: #fff;
-    padding: 5%;
+    padding: 1% 3%;
     margin: 0 auto;
+    border: 5px solid #404b69;
+    z-index: 2;
 }
-
+::-webkit-scrollbar {
+    width: 0px; /* remove scrollbar space */
+    background: transparent; /* optional: just make scrollbar invisible */
+}
 .selected-img {
     width: 100%;
     height: auto;
+    margin-bottom: 10px;
 }
 
 .imagepopup {
@@ -131,6 +154,7 @@ form {
     display: flex;
     flex-direction: column;
     margin-top: 100px;
+    padding-left: 3%;
 }
 
 .comments {
@@ -139,7 +163,7 @@ form {
 
 .singleComment {
     padding: 3%;
-    border: 1px solid #eaeaea;
+    border-top: 1px solid #404b69;
     margin: 10px 0;
 }
 
