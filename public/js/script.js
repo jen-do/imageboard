@@ -84,13 +84,18 @@
         data: {
             images: [],
             imageId: location.hash.slice(1) || 0,
+            tags: [],
+
             form: {
                 title: "",
                 description: "",
                 username: "",
+                tag: "",
                 file: null
             },
-            showMoreButton: true
+            showMoreButton: true,
+            blue: false,
+            red: false
         },
         mounted: function() {
             var self = this;
@@ -133,12 +138,31 @@
                 formData.append("title", this.form.title);
                 formData.append("description", this.form.description);
                 formData.append("username", this.form.username);
+
                 var self = this;
                 axios.post("/upload", formData).then(function(resp) {
+                    // document.getElementById("upload").value = "";
+                    // self.form = {};
                     if (resp.data.success) {
                         self.images.unshift(resp.data.newImage);
+                        var taggedImage = {
+                            tag: self.form.tag,
+                            image_id: resp.data.newImage.id
+                        };
+
+                        console.log(taggedImage);
+                        axios
+                            .post("/upload/tag", taggedImage)
+                            .then(function(resp) {
+                                console.log(
+                                    "resp in 2nd axious req for tags",
+                                    resp
+                                );
+                                self.tags.unshift(resp.data.newTag);
+                            });
                     }
-                    console.log("resp: ", resp);
+
+                    // axios.post('/upload')
                 });
             },
             getMoreImages: function() {
@@ -149,9 +173,40 @@
                     self.images.push.apply(self.images, resp.data); // merging the two arrays self.images and resp.data into the images array in the vue instance data
 
                     // hide more button if there are no more images to display:
-                    if (resp.data[0].last_id + 2 == lastId) {
+                    if (resp.data.length == 0) {
                         self.showMoreButton = false;
                     }
+                });
+            },
+            filterByTag: function(arg) {
+                this.tag = arg;
+                this.tagStyle = this.tag;
+                var self = this;
+                axios
+                    .get(`/imageboard/filter/${this.tag}`)
+                    .then(function(resp) {
+                        console.log("resp in filter: ", resp);
+                        self.images = resp.data;
+                        self.showMoreButton = false;
+                        console.log(resp.data[0].tag);
+                        if (resp.data[0].tag == "blue") {
+                            self.blue = true;
+                            self.red = false;
+                            console.log(self.blue);
+                        } else if (resp.data[0].tag == "red") {
+                            self.red = true;
+                            self.blue = false;
+                            console.log(self.red);
+                        }
+                    });
+            },
+            resetFilter: function() {
+                var self = this;
+                axios.get("/imageboard").then(function(resp) {
+                    self.images = resp.data;
+                    self.showMoreButton = true;
+                    self.red = false;
+                    self.blue = false;
                 });
             }
         }

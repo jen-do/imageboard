@@ -59,6 +59,20 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
     }
 });
 
+app.post("/upload/tag", (req, res) => {
+    console.log("req.body", req.body);
+    db.saveTag(req.body.tag, req.body.image_id)
+        .then(results => {
+            console.log(results);
+            res.json({
+                newTag: results[0]
+            });
+        })
+        .catch(err => {
+            console.log("error in POST /uploads if statement: ", err);
+        });
+});
+
 app.get("/imageboard", (req, res) => {
     db.getImages()
         .then(results => {
@@ -89,6 +103,17 @@ app.get("/get-more-images/:id", (req, res) => {
     db.getMoreImages(lastId)
         .then(results => {
             console.log(results);
+            res.json(results);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+app.get("/imageboard/filter/:tag", (req, res) => {
+    var tag = req.params.tag;
+    db.filterByTag(tag)
+        .then(results => {
             res.json(results);
         })
         .catch(err => {

@@ -1,27 +1,41 @@
 <!doctype html>
 <html>
 <head>
-    <title></title>
+    <title>imageboard</title>
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700" rel="stylesheet">
 </head>
 <body>
-    <h1>blue things</h1>
 
     <div id="main">
+
+        <h1 v-if ="red" v-bind:class= '{red:red}'>red things</h1>
+        <h1 v-else-if ="blue" v-bind:class= '{blue:blue}'>blue things</h1>
+        <h1 v-else>some things</h1>
+
         <h2>image upload</h2>
         <form>
             <input v-model="form.title" type="text" placeholder="title" name="title">
             <input  v-model="form.description" type="text" placeholder="description" name="description">
             <input  v-model="form.username" type="text" placeholder="username" name="username">
+            <input  v-model="form.tag" type="text" placeholder="tag" name="tag">
             <label class="custom-file-upload">
-            <input type="file" accept="image/*" @change = "handleFileChange">
+            <input id="upload" type="file" accept="image/*" @change = "handleFileChange">
             select your image</label>
             <button @click = "uploadFile" id="fileupload">upload</button>
         </form>
 
+
         <h2>latest pictures</h2>
+
+        <div id="select-tags">
+            <button @click = "filterByTag('blue')">blue things</button>
+            <button @click = "filterByTag('red')">red things</button>
+            <button @click = "resetFilter">some things</button>
+        </div>
+
         <div class="imgcontainer">
+
             <!-- an alternative way to pass the id of the image just clicked is to pass it as an argument to the click event function: @click ="toggleComponent(image.id)" -->
             <div v-for = 'image in images' class="imagebox" @click ="toggleComponent" >
                 <!-- redirect path #id -->
@@ -52,7 +66,7 @@
             <div class="imagepopup">
                 <h2>{{ singleImage.title }}</h2>
                 <img :src="singleImage.url" class="selected-img">
-                <p><strong>description: </strong>{{ singleImage.description }}</p>
+                <p v-if="singleImage.description"><strong>description: </strong>{{ singleImage.description }}</p>
                 <p><strong>uploaded by: </strong>{{ singleImage.username }}</p>
                 <p><strong>date: </strong><span id ="date">{{ singleImage.created_at }}</span></p>
             </div>
@@ -64,8 +78,8 @@
             </form>
 
             <div class="comments">
-                <h2 v-if ="comments.length > 0">Recent Comments</h2>
-                <h2 v-else>Be the first to add a comment.</h2>
+                <h3 v-if ="comments.length > 0">Recent Comments</h3>
+                <h3 v-else>Be the first to add a comment.</h3>
                 <div v-for = "singleComment in comments" class="singleComment">
                     <p><strong>{{ singleComment.username }} said:</strong></p>
                     <p>"{{ singleComment.comment }}"</p>

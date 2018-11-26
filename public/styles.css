@@ -6,31 +6,37 @@
 
 body {
     font-family: "Source Code Pro", monospace;
+    color: #333;
 }
 
 #main {
     background: #eee;
-    padding: 3% 0;
+    padding-bottom: 3%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 h1,
-h2 {
+h2,
+h3 {
     font-weight: 500;
     text-align: center;
     padding: 15px 0;
 }
 
 h1 {
-    background: #404b69;
-    color: #add2c9;
+    background: #333;
+    color: #eee;
     line-height: 2;
+    width: 100%;
+    font-size: 40px;
 }
 
 h2 {
-    color: #404b69;
+    /* color: #404b69; */
+    margin-top: 20px;
+    border-top: 1px solid #333;
 }
 
 h4 {
@@ -54,11 +60,11 @@ label > input[type="file"] {
 
 button,
 .custom-file-upload {
-    background: #404b69;
-    color: #fff;
+    background: #333;
+    color: #eee;
     border: none;
     padding: 10px 20px;
-    margin: 0 10px;
+    margin: 10px 10px;
     font-family: "Source Code Pro", monospace;
     cursor: pointer;
 }
@@ -92,15 +98,23 @@ button,
 }
 
 .imgcontainer,
-form {
+form,
+#select-tags {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 form {
-    margin: 20px 0;
     align-items: center;
+}
+
+.red {
+    background: #dd0a35;
+}
+
+.blue {
+    background: #404b69;
 }
 
 /* popup component */
@@ -167,8 +181,11 @@ form {
     margin: 10px 0;
 }
 
-.imagepopup h2 {
+.imagepopup h2,
+.comments h2 {
     text-align: left;
+    border: none;
+    margin-top: 0;
 }
 
 @media screen and (max-width: 480px) {
