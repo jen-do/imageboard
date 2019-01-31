@@ -5,11 +5,12 @@ var multer = require("multer");
 var uidSafe = require("uid-safe");
 var path = require("path");
 const s3 = require("./s3.js");
+const moment = require("moment");
 
 const bodyparser = require("body-parser");
 app.use(bodyparser.json());
 
-// boilerplate for file upload
+// file upload
 var diskStorage = multer.diskStorage({
     destination: function(req, file, callback) {
         callback(null, __dirname + "/uploads");
@@ -27,14 +28,12 @@ var uploader = multer({
         fileSize: 2097152
     }
 });
-// end boilerplate file upload
+// end file upload
 
 app.use(express.static("./public"));
 app.use(express.static("./uploads"));
 
 app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
-    // If nothing went wrong the file is already in the uploads directory
-    // property 'file' will be added to req object
     if (req.file) {
         db.saveUploads(
             "https://s3.amazonaws.com/spicedling/" + req.file.filename,
@@ -49,7 +48,7 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
                 });
             })
             .catch(err => {
-                console.log("error in POST /uploads if statement: ", err);
+                console.log("error in POST /upload if statement: ", err);
             });
     } else {
         res.json({
@@ -60,25 +59,21 @@ app.post("/upload", uploader.single("file"), s3.upload, function(req, res) {
 });
 
 app.post("/upload/tag", (req, res) => {
-    console.log("req.body", req.body);
     db.saveTag(req.body.tag, req.body.image_id)
         .then(results => {
-            console.log(results);
             res.json({
                 newTag: results[0]
             });
         })
         .catch(err => {
-            console.log("error in POST /uploads if statement: ", err);
+            console.log("error in POST /upload/tag: ", err);
         });
 });
 
 app.get("/imageboard", (req, res) => {
     db.getImages()
         .then(results => {
-            var imagesArr = results;
-            // console.log(imagesArr);
-            res.json(imagesArr);
+            res.json(results);
         })
         .catch(err => {
             console.log("error in GET/imageboard ", err);
@@ -86,10 +81,8 @@ app.get("/imageboard", (req, res) => {
 });
 
 app.get("/imageboard/:id", (req, res) => {
-    console.log("req.params.id", req.params.id);
     db.checkId(req.params.id)
         .then(results => {
-            console.log("results in checkId: ", results);
             res.json(results);
         })
         .catch((err, results) => {
@@ -102,11 +95,10 @@ app.get("/get-more-images/:id", (req, res) => {
     var lastId = req.params.id;
     db.getMoreImages(lastId)
         .then(results => {
-            console.log(results);
             res.json(results);
         })
         .catch(err => {
-            console.log(err);
+            console.log("error in GET/get-more-images ", err);
         });
 });
 
@@ -117,7 +109,7 @@ app.get("/imageboard/filter/:tag", (req, res) => {
             res.json(results);
         })
         .catch(err => {
-            console.log(err);
+            console.log("error in GET/imageboard/filter/:tag ", err);
         });
 });
 
@@ -127,24 +119,31 @@ app.get("/singleImage/:imageId", (req, res) => {
         db.getComments(req.params.imageId)
     ])
         .then((selectedImage, comments) => {
+            selectedImage[0][0].created_at = moment(
+                selectedImage[0][0].created_at
+            ).format("MMMM Do YYYY, h:mm a");
+            comments = selectedImage[1];
+            comments.forEach(comment => {
+                comment.created_at = moment(comment.created_at).fromNow();
+            });
+
             res.json({
                 selectedImage: selectedImage,
                 comments: comments
             });
         })
         .catch(err => {
-            console.log("error in GET/singleimage image: ", err);
+            console.log("error in GET/singleimage: ", err);
         });
 });
 
 app.post("/singleImage/:imageId", (req, res) => {
-    console.log(
-        "req.body und req.params in post comment: ",
-        req.body,
-        req.params.imageId
-    );
     db.saveComment(req.body.comment, req.body.username, req.params.imageId)
         .then(results => {
+            results.forEach(comment => {
+                comment.created_at = moment(comment.created_at).fromNow();
+                return results;
+            });
             res.json({
                 newComment: results[0]
             });

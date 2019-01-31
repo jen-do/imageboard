@@ -17,6 +17,8 @@ body {
     align-items: center;
 }
 
+/* text formatting */
+
 h1,
 h2,
 h3 {
@@ -34,7 +36,6 @@ h1 {
 }
 
 h2 {
-    /* color: #404b69; */
     margin-top: 20px;
     border-top: 1px solid #333;
 }
@@ -43,15 +44,42 @@ h4 {
     padding: 15px 0;
 }
 
+.imagepopup h2,
+.comments h2 {
+    text-align: left;
+    border: none;
+    margin-top: 0;
+}
+
 p {
     font-size: 0.8em;
     padding: 5px 0;
 }
 
-input {
+/* heading */
+
+.red {
+    background: #dd0a35;
+}
+
+.blue {
+    background: #404b69;
+}
+
+/* form fields and buttons*/
+
+form {
+    align-items: center;
+}
+
+input,
+select,
+textarea {
+    width: 200px;
     margin: 10px;
     padding: 9px 10px;
     font-family: "Source Code Pro", monospace;
+    color: #666;
 }
 
 label > input[type="file"] {
@@ -67,6 +95,7 @@ button,
     margin: 10px 10px;
     font-family: "Source Code Pro", monospace;
     cursor: pointer;
+    text-align: center;
 }
 
 .custom-file-upload {
@@ -74,16 +103,12 @@ button,
     font-size: 0.85em;
 }
 
-#more,
-#submit {
-    margin-top: 30px;
-    width: 190px;
-}
-
-.img {
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
+.imgcontainer,
+form,
+#select-tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .imagebox {
@@ -97,33 +122,20 @@ button,
     -moz-box-shadow: 12px 13px 25px -6px rgba(0, 0, 0, 0.55);
 }
 
-.imgcontainer,
-form,
-#select-tags {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-form {
-    align-items: center;
-}
-
-.red {
-    background: #dd0a35;
-}
-
-.blue {
-    background: #404b69;
+.img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
 }
 
 /* popup component */
 
 #close {
     float: right;
+    cursor: pointer;
 }
 
-.outer-container {
+.popup-outer-container {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -134,7 +146,7 @@ form {
     background: rgba(0, 0, 0, 0.6);
 }
 
-.single-image-container {
+.popup-inner-container {
     position: fixed;
     overflow: scroll;
     width: 70%;
@@ -150,7 +162,7 @@ form {
 }
 ::-webkit-scrollbar {
     width: 0px; /* remove scrollbar space */
-    background: transparent; /* optional: just make scrollbar invisible */
+    background: transparent; /* make scrollbar invisible */
 }
 .selected-img {
     width: 100%;
@@ -164,10 +176,12 @@ form {
     margin-bottom: 20px;
 }
 
+/* comments */
+
 .submit-comment {
     display: flex;
     flex-direction: column;
-    margin-top: 100px;
+    margin-top: 50px;
     padding-left: 3%;
 }
 
@@ -181,12 +195,7 @@ form {
     margin: 10px 0;
 }
 
-.imagepopup h2,
-.comments h2 {
-    text-align: left;
-    border: none;
-    margin-top: 0;
-}
+/* media queries */
 
 @media screen and (max-width: 480px) {
     .imgcontainer {
@@ -201,8 +210,33 @@ form {
         height: auto;
     }
     input,
-    button {
+    button,
+    select,
+    .custom-file-upload {
         width: 95%;
         height: 50px;
+    }
+    .custom-file-upload {
+        padding: 15px 0;
+    }
+    .popup-inner-container {
+        width: 90%;
+        left: 5%;
+    }
+    .imagepopup {
+        width: 100%;
+        float: none;
+    }
+    .submit-comment {
+        border-top: 1px solid #404b69;
+        margin-top: 0;
+        padding: 5% 0;
+    }
+    .submit-comment textarea,
+    .submit-comment input {
+        width: 100%;
+    }
+    .comments {
+        margin-top: 5%;
     }
 }

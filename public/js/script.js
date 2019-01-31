@@ -1,5 +1,5 @@
 (function() {
-    ///////////////////////////// VUE Component ////////////////////////////
+    // ----------- VUE Component ----------- //
 
     Vue.component("popup", {
         template: "#popup-template",
@@ -15,8 +15,8 @@
             };
         },
         watch: {
+            // whenever imageId in props changes this function will run and send another axois request to get information about and render the other image (if existing)
             imageId: function() {
-                console.log("watcher running!", this.imageId);
                 var self = this;
                 axios.get("/imageboard/" + self.imageId).then(function(resp) {
                     if (resp.data.length > 0) {
@@ -34,13 +34,11 @@
         },
         mounted: function() {
             var self = this;
-
             axios
                 .get(`/singleImage/${this.imageId}`)
                 .then(function(resp) {
                     self.singleImage = resp.data.selectedImage[0][0];
                     self.comments = resp.data.selectedImage[1];
-                    // console.log(self.singleImage, self.comments);
                 })
                 .catch(function(err) {
                     console.log(
@@ -51,7 +49,8 @@
         },
         methods: {
             closeComponent: function() {
-                this.$emit("close-the-component"); // name of the message => refering to the eventhandler in index.html component-tag <popup>
+                // name of the emitted message (close-the-component) is refering to the eventhandler in the <popup> tag in index.html
+                this.$emit("close-the-component");
             },
             submitComment: function(e) {
                 e.preventDefault();
@@ -66,6 +65,8 @@
                     .post(`/singleImage/${this.imageId}`, submittedComments)
                     .then(function(resp) {
                         self.comments.unshift(resp.data.newComment);
+                        self.form.comment = "";
+                        self.form.username = "";
                     })
                     .catch(function(err) {
                         console.log(
@@ -77,15 +78,14 @@
         }
     });
 
-    /////////////////////////// #main Vue instance ///////////////////////////
+    // ----------- #main VUE instance ----------- //
 
     new Vue({
-        el: "#main", // el short for 'element'
+        el: "#main",
         data: {
             images: [],
             imageId: location.hash.slice(1) || 0,
             tags: [],
-
             form: {
                 title: "",
                 description: "",
@@ -101,37 +101,26 @@
             var self = this;
             window.addEventListener("hashchange", function() {
                 self.imageId = location.hash.slice(1);
-                // console.log(location.hash.slice(1));
             });
             axios.get("/imageboard").then(function(resp) {
                 self.images = resp.data;
-                console.log("self.images = imagesFromServer: ", self.images);
             });
-        }, // end of mounted function
+        },
         methods: {
             toggleComponent: function(e) {
-                console.log(
-                    "e.target.id in toggleComponent: ",
-                    e.target.id
-                    // e.currentTarget.getAttribute("id"),
-                );
                 this.imageId = e.target.id;
-                //  e.currentTarget.getAttribute("id");
             },
 
             closingTheComponent: function() {
                 this.imageId = 0;
             },
-
             handleFileChange: function(e) {
                 this.form.file = e.target.files[0];
             },
-
             uploadFile: function(e) {
-                e.preventDefault(); // prevents form from submittung and reloading the page
-                console.log("this :", this.form);
+                e.preventDefault();
 
-                //use formData to upload file an user input to server, use only for file uploads
+                //use formData for file uploads only
                 var formData = new FormData();
 
                 formData.append("file", this.form.file);
@@ -141,36 +130,28 @@
 
                 var self = this;
                 axios.post("/upload", formData).then(function(resp) {
-                    // document.getElementById("upload").value = "";
-                    // self.form = {};
                     if (resp.data.success) {
                         self.images.unshift(resp.data.newImage);
                         var taggedImage = {
                             tag: self.form.tag,
                             image_id: resp.data.newImage.id
                         };
-
-                        console.log(taggedImage);
+                        // console.log(taggedImage);
                         axios
                             .post("/upload/tag", taggedImage)
                             .then(function(resp) {
-                                console.log(
-                                    "resp in 2nd axious req for tags",
-                                    resp
-                                );
                                 self.tags.unshift(resp.data.newTag);
                             });
                     }
-
-                    // axios.post('/upload')
                 });
             },
+            // getMoreImages: figure out the id of the last image displayed to get the next 6 images stored in the db
             getMoreImages: function() {
                 var lastId = this.images[this.images.length - 1].id;
                 var self = this;
-                // GET /get-more-images/
                 axios.get("/get-more-images/" + lastId).then(function(resp) {
-                    self.images.push.apply(self.images, resp.data); // merging the two arrays self.images and resp.data into the images array in the vue instance data
+                    // merging the two arrays (array of images already stored in data and the newly requested array of images) into one single single array:
+                    self.images.push.apply(self.images, resp.data);
 
                     // hide more button if there are no more images to display:
                     if (resp.data.length == 0) {
@@ -180,23 +161,19 @@
             },
             filterByTag: function(arg) {
                 this.tag = arg;
-                this.tagStyle = this.tag;
                 var self = this;
                 axios
                     .get(`/imageboard/filter/${this.tag}`)
                     .then(function(resp) {
-                        console.log("resp in filter: ", resp);
+                        // console.log("resp in axios request for filtered images: ", resp);
                         self.images = resp.data;
                         self.showMoreButton = false;
-                        console.log(resp.data[0].tag);
                         if (resp.data[0].tag == "blue") {
                             self.blue = true;
                             self.red = false;
-                            console.log(self.blue);
                         } else if (resp.data[0].tag == "red") {
                             self.red = true;
                             self.blue = false;
-                            console.log(self.red);
                         }
                     });
             },

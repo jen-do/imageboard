@@ -5,93 +5,95 @@
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700" rel="stylesheet">
 </head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <body>
 
+    <!-- begin #MAIN VUE INSTANCE -->
     <div id="main">
 
+        <!-- conditionally rendering headings -->
         <h1 v-if ="red" v-bind:class= '{red:red}'>red things</h1>
         <h1 v-else-if ="blue" v-bind:class= '{blue:blue}'>blue things</h1>
         <h1 v-else>some things</h1>
 
+        <!-- image upload form -->
         <h2>image upload</h2>
-        <form>
+        <form autocomplete="off">
             <input v-model="form.title" type="text" placeholder="title" name="title">
             <input  v-model="form.description" type="text" placeholder="description" name="description">
             <input  v-model="form.username" type="text" placeholder="username" name="username">
-            <input  v-model="form.tag" type="text" placeholder="tag" name="tag">
+            <select v-model="form.tag" name="tag">
+                <option disabled value="">please select a tag</option>
+                <option>blue</option>
+                <option>red</option>
+            </select>
             <label class="custom-file-upload">
             <input id="upload" type="file" accept="image/*" @change = "handleFileChange">
             select your image</label>
             <button @click = "uploadFile" id="fileupload">upload</button>
         </form>
 
-
         <h2>latest pictures</h2>
 
+        <!-- filter images by tag (red/blue/somethings)-->
         <div id="select-tags">
             <button @click = "filterByTag('blue')">blue things</button>
             <button @click = "filterByTag('red')">red things</button>
             <button @click = "resetFilter">some things</button>
         </div>
 
+        <!-- rendering images, popup modal opens on @click-->
         <div class="imgcontainer">
-
-            <!-- an alternative way to pass the id of the image just clicked is to pass it as an argument to the click event function: @click ="toggleComponent(image.id)" -->
-            <div v-for = 'image in images' class="imagebox" @click ="toggleComponent" >
-                <!-- redirect path #id -->
+            <div v-for = 'image in images' class="imagebox" @click ="toggleComponent">
                 <a :href =" '#' +image.id"><img :src="image.url" class="img" :id="image.id"></a>
                 <h4>{{ image.title }}</h4>
             </div>
         </div>
 
+        <!-- more button -->
         <button v-if = "showMoreButton" @click = "getMoreImages" id="more">more</button>
 
-
-        <!-- name on the left is refering to name in props (must use kebab-case in vue attributes) - name on the right is refering to the name in the Vue instance -->
+        <!-- component displaying a single image and comments-->
         <popup :image-id = "imageId" v-if="imageId > 0" @close-the-component = closingTheComponent>
         </popup>
 
-
     </div>
+    <!-- end #MAIN VUE INSTANCE -->
 
-    <!-- this script must be outside of #main -->
-
+    <!-- begin COMPONENT TEMPLATE (this script must be placed outside of #main)-->
     <script id="popup-template" type="text/x-template">
-        <div class="outer-container">
-        <div class="single-image-container">
+        <div class="popup-outer-container">
+            <div class="popup-inner-container">
 
+                <h3 @click = "closeComponent" id="close">x</h3>
 
-            <h3 @click = "closeComponent" id="close">x</h3>
-
-            <div class="imagepopup">
-                <h2>{{ singleImage.title }}</h2>
-                <img :src="singleImage.url" class="selected-img">
-                <p v-if="singleImage.description"><strong>description: </strong>{{ singleImage.description }}</p>
-                <p><strong>uploaded by: </strong>{{ singleImage.username }}</p>
-                <p><strong>date: </strong><span id ="date">{{ singleImage.created_at }}</span></p>
-            </div>
-
-            <form class="submit-comment">
-                <input v-model="form.comment" type="text" name="comment" placeholder="your comment">
-                <input  v-model="form.username" type="text" placeholder="your name" name="username">
-                <button @click = "submitComment" id="submit">submit</button>
-            </form>
-
-            <div class="comments">
-                <h3 v-if ="comments.length > 0">Recent Comments</h3>
-                <h3 v-else>Be the first to add a comment.</h3>
-                <div v-for = "singleComment in comments" class="singleComment">
-                    <p><strong>{{ singleComment.username }} said:</strong></p>
-                    <p>"{{ singleComment.comment }}"</p>
-                    <p>{{ singleComment.created_at }}</p>
+                <div class="imagepopup">
+                    <h2>{{ singleImage.title }}</h2>
+                    <img :src="singleImage.url" class="selected-img">
+                    <p v-if="singleImage.description"><strong>description: </strong>{{ singleImage.description }}</p>
+                    <p><strong>uploaded by: </strong>{{ singleImage.username }}</p>
+                    <p><strong>date: </strong>{{ singleImage.created_at }}</p>
                 </div>
+
+                <form class="submit-comment" autocomplete="off">
+                    <textarea v-model="form.comment" type="text" name="comment" placeholder="add a comment" rows="5" id="comment"></textarea>
+                    <input  v-model="form.username" type="text" placeholder="your name" name="username" id="comment-user">
+                    <button @click = "submitComment" id="submit">submit</button>
+                </form>
+
+                <div class="comments">
+                    <h3 v-if ="comments.length > 0">Recent Comments</h3>
+                    <h3 v-else>Be the first to add a comment.</h3>
+                    <div v-for = "singleComment in comments" class="singleComment">
+                        <p><strong>{{ singleComment.username }} said {{ singleComment.created_at }}:</strong></p>
+                        <p>"{{ singleComment.comment }}"</p>
+                    </div>
+                </div>
+
             </div>
-
         </div>
-    </div>
     </script>
-
-
+    <!-- end COMPONENT TEMPLATE -->
 
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>
