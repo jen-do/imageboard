@@ -18,9 +18,9 @@ exports.saveUploads = function(file, username, title, description) {
     return db
         .query(
             `
-        INSERT INTO images (url, username, title, description)
-        VALUES ($1, $2, $3, $4)
-        RETURNING id, url, username, title, description`,
+            INSERT INTO images (url, username, title, description)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, url, username, title, description`,
             [file || null, username || null, title || null, description]
         )
         .then(function(results) {
@@ -32,9 +32,9 @@ exports.saveTag = function(tag, image_id) {
     return db
         .query(
             `
-        INSERT INTO tags (tag, image_id)
-        VALUES ($1, $2)
-        RETURNING tag, image_id`,
+            INSERT INTO tags (tag, image_id)
+            VALUES ($1, $2)
+            RETURNING tag, image_id`,
             [tag, image_id || null]
         )
         .then(function(results) {
@@ -46,14 +46,14 @@ exports.getMoreImages = function(lastId) {
     return db
         .query(
             `
-        SELECT *, (
-            SELECT id FROM images
-            ORDER BY id
-            LIMIT 1) AS last_id
-        FROM images
-        WHERE id < $1
-        ORDER BY id DESC
-        LIMIT 6`,
+            SELECT *, (
+                SELECT id FROM images
+                ORDER BY id
+                LIMIT 1) AS last_id
+            FROM images
+            WHERE id < $1
+            ORDER BY id DESC
+            LIMIT 6`,
             [lastId]
         )
         .then(function(results) {
@@ -119,9 +119,9 @@ exports.saveComment = function(comment, username, imageId) {
     return db
         .query(
             `
-        INSERT INTO comments (comment, username, image_id)
-        VALUES ($1, $2, $3)
-        RETURNING comment, username, created_at`,
+            INSERT INTO comments (comment, username, image_id)
+            VALUES ($1, $2, $3)
+            RETURNING comment, username, created_at`,
             [comment || null, username || null, imageId]
         )
         .then(function(results) {

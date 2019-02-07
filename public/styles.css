@@ -164,6 +164,7 @@ form,
     width: 0px; /* remove scrollbar space */
     background: transparent; /* make scrollbar invisible */
 }
+
 .selected-img {
     width: 100%;
     height: auto;

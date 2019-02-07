@@ -31,7 +31,7 @@ exports.upload = function(req, res, next) {
 
     // now listening for response from AWS
     s3Request.on("response", s3Response => {
-        // was Sussessful will be true if statuscode = 200
+        // wasSussessful will be true if statuscode = 200
         console.log("status code of response: ", s3Response.statusCode);
         const wasSuccessful = s3Response.statusCode == 200;
         if (wasSuccessful) {

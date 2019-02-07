@@ -165,7 +165,6 @@
                 axios
                     .get(`/imageboard/filter/${this.tag}`)
                     .then(function(resp) {
-                        // console.log("resp in axios request for filtered images: ", resp);
                         self.images = resp.data;
                         self.showMoreButton = false;
                         if (resp.data[0].tag == "blue") {
